@@ -305,6 +305,18 @@ that names Operator restores the default Tactical layout. Operator was the
 only layout that showed the HUD's top banner bar, so its markup and styles are
 removed too.
 
+## Narrow desktop panel stability
+
+At desktop viewport widths from 721–960 CSS pixels, the non-Cyber, non-Cockpit
+side rails each occupy at most half the space between their outside margins,
+with a 16 px gap. Expanded panels fit inside their rail. This also covers browser
+zoom reducing a tiled window's effective viewport width. Authoring and Display
+can stay open together without overlapping horizontally or repeatedly feeding
+their height allocations back into one another. Phone sheets keep their existing
+layout. `node scripts/qa-panel-layout-stability.mjs` samples both panels at idle
+across optical and legacy HUD layouts, the narrow breakpoint, a wider desktop,
+and the phone Display sheet. It checks stability, separation and control access.
+
 ## Optical HUD layouts
 
 Aperture adds broken concentric rings and compass graduations. Survey adds a

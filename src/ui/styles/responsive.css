@@ -255,3 +255,34 @@
     display: none;
   }
 }
+
+/* Side-by-side desktop windows and browser zoom can leave less room than
+   the two default rail widths need. Keep their horizontal lanes separate:
+   Display is a left-rail obstacle and also follows its vertical baseline,
+   so intersecting lanes otherwise feed their allocations back into each
+   other. Phone sheets and Cyber/Cockpit own their separate compositions. */
+@media (min-width: 721px) and (max-width: 960px) {
+  :root:not([data-ui-theme='cyber'])
+    body:not(.cockpit-mode)
+    :is(#left-panel-stack, #right-context-rail) {
+    max-width: calc(
+      (100vw - var(--left-stack-x) - var(--right-rail-x) - 16px) / 2
+    );
+  }
+
+  :root:not([data-ui-theme='cyber'])
+    body:not(.cockpit-mode)
+    :is(#left-panel-stack, #right-context-rail)
+    > [data-panel-id] {
+    max-width: 100%;
+  }
+
+  :root:not([data-ui-theme='cyber'])
+    body:not(.cockpit-mode)
+    #scene-panel
+    .scene-controls
+    .scene-btn {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+}

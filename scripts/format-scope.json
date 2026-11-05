@@ -203,6 +203,7 @@
   "src/ui/visualInput.test.mjs",
   "scripts/qa-visual-input.mjs",
   "scripts/qa-scope-hud.mjs",
+  "scripts/qa-panel-layout-stability.mjs",
   "scripts/qa-segmented-controls.mjs",
   "src/ui/displayControls.js",
   "src/ui/styles/segmented-control.css",
