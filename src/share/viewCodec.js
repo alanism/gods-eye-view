@@ -111,7 +111,15 @@ export const SHARE_VIEW_ENUMS = Object.freeze({
     'esri-imagery',
     'osm',
   ]),
-  hudVariant: Object.freeze(['tactical', 'operator', 'minimal', 'cyber']),
+  hudVariant: Object.freeze([
+    'tactical',
+    'operator',
+    'minimal',
+    'cyber',
+    'aperture',
+    'survey',
+    'signal',
+  ]),
   detectionMode: Object.freeze(['OFF', 'SPARSE', 'BALANCED', 'DENSE']),
   detectionAllocation: Object.freeze(['ELASTIC', 'WEIGHTED']),
 });

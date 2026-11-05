@@ -55,7 +55,8 @@ test('the complete Realtime tool payload pins the manifest-generated layer relea
     // Voice geometry adds resolve_area, find_imagery, osm_query, the analyst
     // area scopes and the osm-places layer; natural-region candidates and the
     // tightened area tool wording follow review.
-    'd0c5ad733670972713a54cb10676c42b7c6e78834bfff52b473c0e8a45e742c3',
+    // Aperture, Survey and Signal extend set_hud without changing other arguments.
+    'b57fa9715e21d22c36bbbcf7802606ec96465ad9374f1de8a7a1887c236ad4cc',
   );
 });
 
@@ -220,7 +221,14 @@ test('all legacy action arguments are byte-identical after removing the delibera
   }
   // Cyber adds one HUD layout and Operator was retired.
   const hud = property('set_hud').layout;
-  assert.deepEqual(hud.enum, ['tactical', 'minimal', 'cyber']);
+  assert.deepEqual(hud.enum, [
+    'tactical',
+    'minimal',
+    'cyber',
+    'aperture',
+    'survey',
+    'signal',
+  ]);
   hud.enum = ['tactical', 'operator', 'minimal'];
   // Snow is retired from set_visual_style; restore it to keep the legacy pin.
   const visualStyle = legacy.find((tool) => tool.name === 'set_visual_style')

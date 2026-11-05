@@ -445,6 +445,9 @@ test('defaults travel as frozen meanings that match today’s app defaults', () 
     'operator',
     'minimal',
     'cyber',
+    'aperture',
+    'survey',
+    'signal',
   ]);
   assert.deepEqual(
     SHARE_VIEW_ENUMS.hudVariant.filter((variant) => variant !== 'operator'),

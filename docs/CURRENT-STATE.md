@@ -298,12 +298,36 @@ restoration and both Scope presentations. `QA_SCREENSHOT_DIR` saves screenshots.
 
 ## HUD layouts — October 29, 2026
 
-Display > HUD > Layout offers Tactical, Minimal and Cyber; the `set_hud` voice
-action accepts the same three. The Operator layout is retired. Share links
+Display > HUD > Layout offers Tactical, Minimal, Cyber, Aperture, Survey and
+Signal; the `set_hud` voice action accepts the same six. The Operator layout is retired. Share links
 keep its enum code so older links still parse, and a link, scene or saved state
 that names Operator restores the default Tactical layout. Operator was the
 only layout that showed the HUD's top banner bar, so its markup and styles are
 removed too.
+
+## Optical HUD layouts
+
+Aperture adds broken concentric rings and compass graduations. Survey adds a
+24 px dot grid, registration corners and screen-space axes. Signal adds segmented
+rings and acquisition brackets. These are SVG/CSS camera overlays, not new data
+layers or imagery providers. Their marks do not identify or measure objects on
+the ground. Existing defaults and the Tactical, Minimal and Cyber choices remain.
+
+The heading ruler and pitch readout use live camera values from IntelHUD's
+existing telemetry cadence. Unavailable camera values display dashes. Altitude
+uses the existing mean-sea-level display datum; the phone layout includes it in
+the central readout. The overlays never intercept pointer input.
+
+The Display panel's preview buttons and layout select use the same action.
+Optical layout selections survive imagery preset changes; Scope enabled state
+and feather remain independent. Shared views and visual scene state retain the
+selected layout. New share enum codes are appended after all existing codes,
+including the reserved Operator code. On phones, open More to reach Display.
+
+Component and state coverage lives in `src/ui/views/intelHudView.test.mjs`,
+`src/ui/displayPanelActions.test.mjs`, `src/ui/cyberTheme.test.mjs` and the shared
+view-codec suites. Full upstream submission checks and locale catalogs are still
+pending on the fork's work-in-progress feature branch; no upstream PR is open.
 
 ## Cyber HUD — September 30, 2026
 

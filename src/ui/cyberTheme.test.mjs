@@ -1,4 +1,9 @@
-import { getScopeMaskFeather, isScopeMaskEnabled, setScopeMaskEnabled, setScopeMaskFeather } from '../scopeMask.js';
+import {
+  getScopeMaskFeather,
+  isScopeMaskEnabled,
+  setScopeMaskEnabled,
+  setScopeMaskFeather,
+} from '../scopeMask.js';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -32,7 +37,7 @@ test('CCTV and Context keep their headers outside Cyber-only scroll bodies', () 
       // The header is RailPanel's; the body is its first content.
       markup.indexOf('<RailPanel ') > -1 &&
         markup.indexOf('<RailPanel ') <
-        markup.indexOf('class="cyber-panel-body ui-scroll"'),
+          markup.indexOf('class="cyber-panel-body ui-scroll"'),
     );
   }
   const shared = readFileSync(
@@ -276,8 +281,14 @@ test('Display and voice HUD routes preserve explicit Cyber entry and exit author
 
 test('scope choice and expanded feather survive every HUD layout and both restore paths', async (t) => {
   const { owner } = styleOwner(t, 'tactical');
-  const previous = { enabled: isScopeMaskEnabled(), feather: getScopeMaskFeather() };
-  t.after(() => { setScopeMaskEnabled(previous.enabled); setScopeMaskFeather(previous.feather); });
+  const previous = {
+    enabled: isScopeMaskEnabled(),
+    feather: getScopeMaskFeather(),
+  };
+  t.after(() => {
+    setScopeMaskEnabled(previous.enabled);
+    setScopeMaskFeather(previous.feather);
+  });
   Object.assign(owner.services, { setScopeMaskEnabled, setScopeMaskFeather });
   let shown = null;
   owner.store = { publish: (view) => (shown = view.scope) };
@@ -569,7 +580,14 @@ test('Cyber side panels share one width and one framed surface material', () => 
 });
 
 test('Cyber is a canonical HUD layout with a safe Tactical fallback', () => {
-  assert.deepEqual(HUD_LAYOUTS, ['tactical', 'minimal', 'cyber']);
+  assert.deepEqual(HUD_LAYOUTS, [
+    'tactical',
+    'minimal',
+    'cyber',
+    'aperture',
+    'survey',
+    'signal',
+  ]);
   assert.equal(normalizeHudLayout('CYBER'), 'cyber');
   assert.equal(normalizeHudLayout('operator'), 'tactical');
   assert.equal(normalizeHudLayout('unknown'), 'tactical');
@@ -654,7 +672,10 @@ test('the Display selector, voice schema and final stylesheet expose Cyber', () 
   const militaryRendering = read('../layers/military/rendering.js');
   const setHud = GEV_ACTION_SCHEMAS.find((schema) => schema.name === 'set_hud');
 
-  assert.match(display, /<option value="cyber">\{\{ t\('Cyber'\) \}\}<\/option>/);
+  assert.match(
+    display,
+    /<option value="cyber">\{\{ t\('Cyber'\) \}\}<\/option>/,
+  );
   assert.match(display, /id="cyber-sonar-toggle"/);
   assert.match(
     display,
@@ -783,7 +804,10 @@ test('the Display selector, voice schema and final stylesheet expose Cyber', () 
     cyberStyles,
     /inset-inline-start: calc\(54px \+ var\(--panel-rail-clearance\)\);/,
   );
-  assert.match(cyberStyles, /right: calc\(51px \+ var\(--panel-rail-clearance\)\);/);
+  assert.match(
+    cyberStyles,
+    /right: calc\(51px \+ var\(--panel-rail-clearance\)\);/,
+  );
   // Each side's edge line shows only beside an open panel.
   assert.match(
     cyberStyles,
@@ -910,4 +934,30 @@ test('Cyber omits only the fictional classification and system header lines', ()
     cyberStyles,
     /#intel-hud\[data-variant='cyber'\] \.hud-top-left \.hud-classification,\s*#intel-hud\[data-variant='cyber'\] \.hud-top-left \.hud-system\s*\{\s*display: none;\s*\}/,
   );
+});
+
+test('optical layouts preserve their selection and Scope settings across imagery changes and restores', async (t) => {
+  const { owner, hud } = styleOwner(t, 'tactical');
+  const beforeScope = isScopeMaskEnabled();
+  const beforeFeather = getScopeMaskFeather();
+  t.after(() => {
+    setScopeMaskEnabled(beforeScope);
+    setScopeMaskFeather(beforeFeather);
+  });
+  setScopeMaskEnabled(false);
+  setScopeMaskFeather(1.75);
+  for (const layout of ['aperture', 'survey', 'signal']) {
+    owner._setHudVariant(layout, { applyVisualDefaults: true });
+    for (const style of ['surveillance', 'thermal', 'normal']) {
+      owner.setStyle(style);
+      assert.equal(hud.getVariant(), layout);
+      assert.equal(isScopeMaskEnabled(), false);
+      assert.equal(getScopeMaskFeather(), 1.75);
+    }
+    await owner.applyVisualState({ hud: { variant: layout, visible: true } });
+    assert.equal(hud.getVariant(), layout);
+  }
+  // Explicitly changing layout still works after filter changes.
+  owner._setHudVariant('minimal', { applyVisualDefaults: true });
+  assert.equal(hud.getVariant(), 'minimal');
 });

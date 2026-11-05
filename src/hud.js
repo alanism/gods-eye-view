@@ -14,7 +14,7 @@ import { applicationServices } from './services/application.js';
  * on independent fixed cadences.
  *
  * The HUD auto-activates when a military-style shader (NVG, FLIR, CRT) is
- * selected and supports the layout variants: tactical, minimal, cyber.
+ * selected and supports the layout variants defined in hudLayoutPolicy.js.
  *
  * Color theming is driven by the active shader mode via CSS custom properties.
  */
@@ -380,6 +380,7 @@ export class IntelHUD {
       active: false,
       variant: this._variant,
       colors: null,
+      camera: { heading: null, pitch: null, altitude: null },
       classification: 'TOP SECRET // SI-TK // NOFORN',
       system: `${this._missionId}  ${this._sensorId}`,
       mode: t(MODE_LABELS.normal),
@@ -567,6 +568,16 @@ export class IntelHUD {
     const ona = Math.max(0, 90 + pitchDeg);
     // i18n-ignore: sensor codes
     readouts.ona = `ONA: ${ona.toFixed(1)}°`;
+    // Numeric camera values drive the optical instruments; unavailable values
+    // stay null rather than fabricating a heading or ground measurement.
+    const heading = Number.isFinite(camera.heading)
+      ? ((Cesium.Math.toDegrees(camera.heading) % 360) + 360) % 360
+      : null;
+    readouts.camera = {
+      heading,
+      pitch: Number.isFinite(pitchDeg) ? pitchDeg : null,
+      altitude: Number.isFinite(altMslM) ? Math.round(altMslM) : null,
+    };
     this._present(readouts);
 
     // `altM` stays the raw ellipsoidal camera height the sensor model reads
@@ -1163,7 +1174,7 @@ export class IntelHUD {
    * Switch the HUD layout variant. Falls back to `'tactical'` if the
    * name is unrecognized. Cyber also applies a coordinated skin to the full
    * application shell; leaving Cyber restores the standard shell tokens.
-   * @param {string} variantName - One of `'tactical'`, `'minimal'`, `'cyber'`.
+   * @param {string} variantName - A layout from HUD_LAYOUTS.
    */
   setVariant(variantName) {
     this._variant = normalizeHudLayout(variantName);

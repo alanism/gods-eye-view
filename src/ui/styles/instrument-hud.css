@@ -1,0 +1,365 @@
+/* Optical instruments: one-pixel etching, an open map, no synthetic contacts.
+   The overlay never captures the pointer. Geometry scales with the viewport. */
+#intel-hud:is(
+  [data-variant='aperture'],
+  [data-variant='survey'],
+  [data-variant='signal']
+) {
+  --instrument-ink: #f0f1e7;
+  --instrument-accent: #ff744f;
+  --instrument-size: min(62vh, 56vw);
+  --hud-color: var(--instrument-ink) !important;
+  --hud-glow: transparent !important;
+}
+#intel-hud[data-variant='survey'] {
+  --instrument-ink: #e5be7b;
+}
+#intel-hud[data-variant='signal'] {
+  --instrument-ink: #b9e3df;
+}
+#intel-hud:has(.instrument-hud)
+  :is(.hud-top-left, .hud-top-right, .hud-edge, .hud-bracket, #hud-gsd) {
+  display: none;
+}
+#intel-hud:has(.instrument-hud) .hud-content {
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+#intel-hud:has(.instrument-hud) :is(.hud-bottom-left, .hud-bottom-right) {
+  bottom: 142px;
+  padding: 8px 12px;
+  border-inline-start: 1px solid
+    color-mix(in srgb, var(--instrument-ink) 40%, transparent);
+  background: linear-gradient(90deg, #080e13b8, #080e1300);
+}
+#intel-hud:has(.instrument-hud) .hud-bottom-right {
+  border-inline-start: none;
+  border-inline-end: 1px solid
+    color-mix(in srgb, var(--instrument-ink) 40%, transparent);
+  background: linear-gradient(270deg, #080e13b8, #080e1300);
+}
+#intel-hud:has(.instrument-hud) .hud-ais-vessel:not(.active) {
+  display: none;
+}
+#intel-hud .instrument-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: rgba(3, 9, 14, 0.2);
+}
+#intel-hud .instrument-hud * {
+  text-shadow: 0 1px 3px #000a;
+}
+.instrument-dot-field {
+  position: absolute;
+  inset: 100px 36px 132px;
+  opacity: 0.12;
+  background-image: radial-gradient(
+    var(--instrument-ink) 0.7px,
+    transparent 0.9px
+  );
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse at center, transparent 28%, #000 72%);
+}
+[data-instrument='survey'] .instrument-dot-field {
+  opacity: 0.32;
+}
+[data-instrument='signal'] .instrument-dot-field {
+  opacity: 0.08;
+}
+.instrument-ident,
+.instrument-clock {
+  position: absolute;
+  top: 136px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+.instrument-ident {
+  left: 40px;
+  flex-wrap: wrap;
+  max-width: 200px;
+}
+.instrument-clock {
+  right: 40px;
+}
+#intel-hud .instrument-index {
+  color: var(--instrument-accent);
+}
+.instrument-name {
+  font-size: 12px;
+  letter-spacing: 2.4px;
+}
+.instrument-ident .instrument-subtitle {
+  flex-basis: 100%;
+  margin-inline-start: 32px;
+}
+#intel-hud .instrument-subtitle {
+  opacity: 0.55;
+  font-size: 9px;
+  letter-spacing: 1.3px;
+}
+.instrument-live-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--instrument-accent);
+  border-radius: 50%;
+}
+.instrument-heading {
+  position: absolute;
+  top: calc(50% - var(--instrument-size) / 2 - 36px);
+  left: 50%;
+  width: 320px;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.instrument-heading-value {
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.instrument-heading-value > span {
+  opacity: 0.55;
+  margin-inline-end: 8px;
+  font-size: 9px;
+}
+.instrument-heading svg {
+  display: block;
+  width: 100%;
+  height: 38px;
+  overflow: hidden;
+}
+#intel-hud .instrument-hud svg {
+  stroke: var(--instrument-ink);
+  stroke-width: 1;
+  filter: drop-shadow(0 1px 1px #000c);
+}
+#intel-hud .instrument-hud svg text {
+  fill: var(--instrument-ink);
+  stroke: none;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+}
+#intel-hud .instrument-hud .instrument-faint {
+  opacity: 0.45;
+}
+#intel-hud .instrument-hud .instrument-accent-fill {
+  fill: var(--instrument-accent);
+  stroke: none;
+}
+#intel-hud .instrument-hud .instrument-accent-text {
+  fill: var(--instrument-accent);
+}
+.instrument-disc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--instrument-size);
+  height: var(--instrument-size);
+  transform: translate(-50%, -50%);
+}
+.instrument-foot {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + var(--instrument-size) / 2 + 4px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 9px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.instrument-foot b {
+  margin-inline-start: 6px;
+  font-weight: 400;
+  font-size: 11px;
+}
+.instrument-foot-divider {
+  width: 1px;
+  height: 10px;
+  background: var(--instrument-ink);
+  opacity: 0.4;
+}
+.instrument-survey {
+  position: absolute;
+  width: min(66vw, 1040px);
+  height: calc(var(--instrument-size) - 24px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.instrument-survey svg {
+  width: 100%;
+  height: 100%;
+}
+.instrument-survey svg path,
+.instrument-survey svg rect {
+  vector-effect: non-scaling-stroke;
+}
+.instrument-fiducial {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: solid var(--instrument-ink);
+  opacity: 0.85;
+}
+.instrument-fiducial.tl {
+  top: 0;
+  left: 0;
+  border-width: 1px 0 0 1px;
+}
+.instrument-fiducial.tr {
+  top: 0;
+  right: 0;
+  border-width: 1px 1px 0 0;
+}
+.instrument-fiducial.bl {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 1px 1px;
+}
+.instrument-fiducial.br {
+  bottom: 0;
+  right: 0;
+  border-width: 0 1px 1px 0;
+}
+.instrument-survey-note {
+  position: absolute;
+  right: 0;
+  bottom: -22px;
+  opacity: 0.55;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+/* Picker previews use the same shapes as the map and stay in the existing
+   Display action path, including when that group teleports into Cockpit. */
+.hud-instrument-picker {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+  padding: 7px 0 2px;
+}
+.hud-instrument-choice {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: 3px;
+  background: #0c141a88;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 5px 2px 7px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.3;
+  transition:
+    border-color 150ms,
+    color 150ms,
+    background-color 150ms;
+}
+.hud-instrument-choice svg {
+  display: block;
+  width: 100%;
+  height: 35px;
+  margin-bottom: 3px;
+}
+.hud-instrument-choice:hover {
+  color: var(--text-primary);
+  border-color: var(--glass-border-hover);
+}
+.hud-instrument-choice.selected {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  background: var(--accent-dim);
+}
+.hud-layout-description {
+  color: var(--text-secondary);
+  font: 10px/1.6 var(--font-sans);
+  padding: 5px 0 2px;
+}
+@media (max-width: 720px) {
+  #intel-hud:has(.instrument-hud) {
+    --instrument-size: min(76vw, 44vh);
+  }
+  .instrument-ident {
+    top: 110px;
+    left: 20px;
+  }
+  .instrument-clock {
+    top: 110px;
+    right: 20px;
+  }
+  .instrument-ident .instrument-subtitle,
+  .instrument-clock .instrument-subtitle {
+    display: none;
+  }
+  .instrument-heading {
+    width: min(64vw, 320px);
+  }
+  .instrument-survey {
+    width: 82vw;
+  }
+  .instrument-dot-field {
+    inset: 150px 20px 170px;
+  }
+  #intel-hud:has(.instrument-hud) :is(.hud-bottom-left, .hud-bottom-right) {
+    bottom: 164px;
+  }
+  #intel-hud:has(.instrument-hud) .hud-bottom-left {
+    left: 20px;
+  }
+  #intel-hud:has(.instrument-hud) .hud-bottom-right {
+    right: 20px;
+    bottom: 124px;
+  }
+  #intel-hud:has(.instrument-hud) .hud-content {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+  }
+}
+@media (max-height: 560px) and (min-width: 721px) {
+  .instrument-ident,
+  .instrument-clock {
+    top: 100px;
+  }
+  #intel-hud:has(.instrument-hud) :is(.hud-bottom-left, .hud-bottom-right) {
+    bottom: 100px;
+  }
+  .instrument-heading {
+    top: 85px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hud-instrument-choice {
+    transition: none;
+  }
+}
+
+/* Keep fine etching at a physical pixel when the instrument scales down. */
+.instrument-hud svg :is(path, circle) {
+  vector-effect: non-scaling-stroke;
+}
+.instrument-mobile-alt {
+  display: none;
+}
+@media (max-width: 720px) {
+  #intel-hud .instrument-disc text {
+    font-size: 20px;
+  }
+  .instrument-clock {
+    top: 144px;
+  }
+  .instrument-mobile-alt {
+    display: inline;
+  }
+  .instrument-foot {
+    gap: 10px;
+    font-size: 8px;
+  }
+  .instrument-foot b {
+    margin-inline-start: 3px;
+    font-size: 10px;
+  }
+}

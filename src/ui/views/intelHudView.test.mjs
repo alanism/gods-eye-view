@@ -161,3 +161,42 @@ test('the selected vessel readout shows while a vessel is selected', async (t) =
   assert.equal(vessel.className, 'hud-ais-vessel');
   assert.equal(vessel.textContent, 'AIS: --');
 });
+
+test('optical instruments follow live camera heading and pitch and unmount for legacy layouts', async (t) => {
+  const { hud, root } = mount(t);
+  hud.viewer.camera.heading = (359.6 * Math.PI) / 180;
+  hud.viewer.camera.pitch = (-30 * Math.PI) / 180;
+  hud._updateCameraData();
+  for (const variant of ['aperture', 'survey', 'signal']) {
+    hud.setVariant(variant);
+    hud.setMode('on');
+    await nextTick();
+    assert.equal(
+      root.querySelector('.instrument-hud').dataset.instrument,
+      variant,
+    );
+    assert.match(
+      root.querySelector('.instrument-heading-value').textContent,
+      /000°/,
+    );
+    assert.match(root.querySelector('.instrument-foot').textContent, /-30\.0°/);
+    assert.equal(
+      Boolean(root.querySelector('.instrument-survey')),
+      variant === 'survey',
+    );
+    // All paths are finite, including the live heading ruler at north wrap.
+    for (const path of root.querySelectorAll('.instrument-hud path')) {
+      assert.doesNotMatch(path.getAttribute('d'), /NaN|Infinity/);
+    }
+  }
+  hud.viewer.camera.heading = undefined;
+  hud._updateCameraData();
+  await nextTick();
+  assert.match(
+    root.querySelector('.instrument-heading-value').textContent,
+    /---°/,
+  );
+  hud.setVariant('minimal');
+  await nextTick();
+  assert.equal(root.querySelector('.instrument-hud'), null);
+});

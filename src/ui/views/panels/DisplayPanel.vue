@@ -1,7 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
-import { t } from '../../../i18n/index.js';
+import { t, msg } from '../../../i18n/index.js';
 import { vPanelState } from '../../rail/panelState.js';
 import { vClassToggle } from '../../rail/classToggle.js';
 import PanelCollapseButton from '../../rail/PanelCollapseButton.vue';
@@ -10,6 +10,7 @@ import UiSlider from '../../kit/UiSlider.js';
 import { useDisplayStore } from '../../stores/display.js';
 import UiButton from '../../kit/UiButton.vue';
 import UiSelect from '../../kit/UiSelect.js';
+import { INSTRUMENT_HUD_LAYOUTS } from '../../../hudLayoutPolicy.js';
 import { StyleParameterRows } from '../../styleParameters.js';
 
 // The Display panel. VisualSettings presents the HUD, Sonar, Scope,
@@ -22,6 +23,12 @@ const { view, models3d, parameters, cockpitPortal } = storeToRefs(display);
 const act = (name, ...args) => display.act(name, ...args);
 const pct = (value) => `${value}%`;
 const hud = computed(() => view.value?.hud ?? null);
+const instrumentDescriptions = {
+  aperture: msg('Concentric optics and a live compass. A clear view through the center.'),
+  survey: msg('Dot grid and registration axes. Divisions mark screen space, not ground distance.'),
+  signal: msg('Segmented rings and acquisition brackets with live camera telemetry.'),
+};
+const instrumentDescription = computed(() => instrumentDescriptions[hud.value?.variant]);
 const sonar = computed(() => view.value?.sonar ?? null);
 const sonarOn = computed(() => sonar.value?.enabled ?? true);
 const detection = computed(() => view.value?.detection ?? null);
@@ -69,8 +76,33 @@ const allocationOptions = computed(() => [
         <option value="tactical">{{ t('Tactical') }}</option>
         <option value="minimal">{{ t('Minimal') }}</option>
         <option value="cyber">{{ t('Cyber') }}</option>
+        <option value="aperture">{{ t('Aperture') }}</option>
+        <option value="survey">{{ t('Survey') }}</option>
+        <option value="signal">{{ t('Signal') }}</option>
       </UiSelect>
     </div>
+    <div v-if="hud?.visible" class="hud-instrument-picker" role="group" :aria-label="t('Optical HUD layouts')">
+      <UiButton v-for="layout in INSTRUMENT_HUD_LAYOUTS" :key="layout" type="button"
+        class="hud-instrument-choice" :class="{ selected: hud.variant === layout }"
+        :pressed="hud.variant === layout" :label="t(layout === 'aperture' ? 'Aperture HUD' : layout === 'survey' ? 'Survey HUD' : 'Signal HUD')"
+        @click="act('setHudLayout', layout)">
+        <svg viewBox="0 0 64 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="0.8">
+          <template v-if="layout === 'survey'">
+            <path d="M8 12V6h9m30 0h9v6M8 28v6h9m30 0h9v-6M12 20h40M32 8v24" />
+            <path d="M20 17v6m24-6v6M29 12h6m-6 16h6" />
+            <rect x="29" y="17" width="6" height="6" />
+          </template>
+          <template v-else>
+            <circle cx="32" cy="20" r="16" :stroke-dasharray="layout === 'signal' ? '5 3' : '1 2'" />
+            <circle cx="32" cy="20" r="12" stroke-dasharray="14 5" />
+            <path v-if="layout === 'aperture'" d="M32 1v7m0 24v7M13 20h7m24 0h7M29 20h6m-3-3v6" />
+            <path v-else d="M26 17v-3h4m8 3v-3h-4m-8 9v3h4m8-3v3h-4" />
+          </template>
+        </svg>
+        <span>{{ t(layout === 'aperture' ? 'Aperture' : layout === 'survey' ? 'Survey' : 'Signal') }}</span>
+      </UiButton>
+    </div>
+    <p v-if="hud?.visible && instrumentDescription" class="hud-layout-description">{{ t(instrumentDescription) }}</p>
     <div class="pp-slider-row cyber-sonar-control cyber-sonar-toggle-row" id="cyber-sonar-row">
       <span class="pp-slider-mini-label">{{ t('Sonar') }}</span>
       <UiButton class="pp-mode-btn" :pressed="sonarOn" pressed-class="active" id="cyber-sonar-toggle" @click="act('toggleSonar')" :title="t('Cyber sonar contact scanner')" :aria-label="t('Cyber sonar contact scanner')">{{ sonarOn ? t('ON') : t('OFF') }}</UiButton>

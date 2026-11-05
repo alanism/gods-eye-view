@@ -231,3 +231,24 @@ test('several owners answer their own actions, the newest first', (t) => {
     ['display', 'toggleBloom'],
   ]);
 });
+
+test('the optical preview buttons use the shared HUD layout action', async (t) => {
+  const store = mount(t);
+  const { calls } = recorder(store);
+  store.publish({
+    hud: { visible: true, variant: 'aperture' },
+    scope: { enabled: true, featherPct: 100 },
+    bloom: { active: false, intensity: 0 },
+    sharpen: { active: true, intensity: 49 },
+  });
+  await nextTick();
+  const choices = [...document.querySelectorAll('.hud-instrument-choice')];
+  assert.equal(choices.length, 3);
+  assert.equal(choices[0].getAttribute('aria-pressed'), 'true');
+  choices.forEach((button) => button.click());
+  assert.deepEqual(calls, [
+    ['setHudLayout', 'aperture'],
+    ['setHudLayout', 'survey'],
+    ['setHudLayout', 'signal'],
+  ]);
+});

@@ -1,3 +1,4 @@
+import { isInstrumentHudLayout } from '../hudLayoutPolicy.js';
 import { clampScopeFeatherPct } from '../scopeMaskPolicy.js';
 import { STYLE_STATUS_LABELS } from './visualPresets.js';
 import { RETIRED_STYLES } from '../visualStylePolicy.js';
@@ -793,9 +794,13 @@ export class VisualSettings {
       this._setSharpenEnabled(sharpenInput.enabled);
     }
 
-    // Cyber is an explicit shell choice, independent of the imagery filter.
+    // Cyber and optical layouts are explicit choices, independent of the imagery filter.
     // Scene/share restoration still applies its own HUD through _setHudVariant.
-    if (preset.hudVariant && this.hud.getVariant() !== 'cyber') {
+    if (
+      preset.hudVariant &&
+      this.hud.getVariant() !== 'cyber' &&
+      !isInstrumentHudLayout(this.hud.getVariant())
+    ) {
       this._setHudVariant(preset.hudVariant);
     }
     if (typeof preset.hudVisible === 'boolean') {

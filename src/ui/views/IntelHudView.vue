@@ -2,6 +2,8 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useHudStore } from '../stores/hud.js';
+import { isInstrumentHudLayout } from '../../hudLayoutPolicy.js';
+import InstrumentHud from './InstrumentHud.vue';
 
 // The readouts, visibility, layout variant and colors IntelHUD publishes.
 const { hud } = storeToRefs(useHudStore());
@@ -14,6 +16,7 @@ const view = computed(() => hud.value ?? EMPTY);
 
 <template>
   <div id="intel-hud" :class="{ active: hud?.active }" :data-variant="hud?.variant" :style="hud?.colors ?? undefined">
+    <InstrumentHud v-if="isInstrumentHudLayout(hud?.variant)" :view="view" />
     <div class="hud-sonar" aria-hidden="true"></div>
     <div class="hud-corner hud-top-left">
       <div class="hud-bracket">┌</div>
